@@ -1,0 +1,97 @@
+namespace: /matic2
+
+common:
+  metadata:
+    defines: metadata
+    name: Matic
+    description: Matic Network is a Layer 2 scaling solution that achieves scale by utilizing sidechains for off-chain computation while ensuring asset security using the Plasma framework and a decentralized network of Proof-of-Stake (PoS) validators
+    tags: blockchain
+    currency: MATIC
+    icon: matic.png
+    website: https://matic.network
+    source: https://github.com/maticnetwork
+    publisher: "OAKnode"
+    white-paper: https://whitepaper.matic.network/
+    twitter: https://twitter.com/maticnetwork
+    telegram: https://t.me/maticnetwork
+    network-name: "testnet"
+    node-type: "full"
+    consensus-type: "Proof of Stake"
+
+  requirements:
+    defines: requirements
+    CPU: "x64 2.0 GHz 2v CPU"
+    RAM: 4096
+    GPU: false
+    disk: 102400
+
+  containers:
+    defines: containers
+    matic-node:
+      image: oaknode/matic-bor
+      image-tag: v0.2.1
+      environment:
+        - <- `HEIMDALL_URL=${heimdall-url}`
+      ports:
+        - <- `0.0.0.0:${p2p-port}:${p2p-port}`
+        - 0.0.0.0:8545:8545
+        - 0.0.0.0:8546:8546
+      paths:
+        - <- `${volume-data}/bor:/root/.bor`
+
+    haimdall-node:
+      image: oaknode/matic-heimdall
+      image-tag: v0.2.0-mumbai-42a1beac
+      environment:
+        - <- `BOR_URL=${bor-url}`
+      ports:
+        - 0.0.0.0:26656:26656
+        - 0.0.0.0:26657:26657
+        - <- `0.0.0.0:${rest-port}:${rest-port}`
+
+  variables:
+    defines: variables
+
+    rest-port:
+      type: int
+      value: 1317
+
+    p2p-port:
+        type: int
+        value: 30303
+
+    network:
+      type: string
+      value: ""
+
+    host:
+      type: string
+      value: "0.0.0.0"
+
+    volume-data:
+      type: string
+      value: <- `${moncc-volume-path}/matic`
+
+    heimdall-url:
+      type: string
+      value: <- get-hostname("matic/testnet", "haimdall-node")
+
+    bor-url:
+      type: string
+      value: <- get-hostname("matic/testnet", "matic-node")
+
+  actions:
+    defines: actions
+    get-key:
+      description: Get Key
+      arguments: {}
+      code: exec("matic-node", "/bin/bash", "-c", `heimdalld show-account`)
+
+testnet:
+  defines: runnable
+  inherits: ./common
+  containers:
+    matic-node:
+      image-tag: v0.2.1
+    haimdall-node:
+      image-tag: v0.2.0-mumbai-42a1beac
