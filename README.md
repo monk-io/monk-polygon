@@ -12,10 +12,10 @@ docker build -t monk/matic-heimdall ./heimdall
 
 ### Load Matic
 ```
-mncc load matic.yaml
+monk load matic.yaml
 ```
 
 ### Run Matic nodes with nginx
 ```
-mncc run matic2/testnet
+monk run matic2/testnet
 ```
