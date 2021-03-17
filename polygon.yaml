@@ -72,11 +72,12 @@ common:
     get-key:
       description: Get Key
       arguments: {}
-      code: exec("matic-node", "/bin/bash", "-c", `heimdalld show-account`)
+      code: exec("polygon-node", "/bin/bash", "-c", `heimdalld show-account`)
 
 testnet:
   defines: runnable
   inherits: ./common
+  version: v0.2.1
   containers:
     polygon-node:
       image-tag: v0.2.1
